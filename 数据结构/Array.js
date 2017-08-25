@@ -93,7 +93,7 @@ var maxProfit2 = function(prices) {
   return maxResult
 };
 
-/** for test
+/** for test test
  * @param ...
  * @return ...
  */
