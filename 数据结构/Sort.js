@@ -1,3 +1,17 @@
+// [记]
+// 排序算法稳定性：
+// 
+// exp1: 归并排序是稳定的排序.即相等的元素的顺序不会改变.
+// 如输入记录 1(1) 3(2) 2(3) 2(4) 5(5) (括号中是记录的关键字)时
+// 输出的 1(1) 2(3) 2(4) 3(2) 5(5) 中的2 和 2 是按输入的顺序.
+// 这对要排序数据包含多个信息而要按其中的某一个信息排序,要求其它信息尽量按输入的顺序排列时很重要.这也是它比快速排序优势的地方.
+// 
+// exp2: 快速排序，不稳定
+// 如输入为1(1) 4(2) 2(3) 2(4) 5(5)
+// 如果选择的pivot为2(3); 2(4)在与pivot比较时，如果判断方式是“将大于pivot的数放在right数组”，则2(4)会被分配在左边；
+// 2(3)、2(4)的相对顺序发生改变
+
+
 // 1.冒泡排序
 function babbleSort(arr) {
   for (let i = 0, len = arr.length; i < len - 1; i++) {
@@ -97,4 +111,95 @@ function quickSort(arr) {
   }
   // left + num + right
   return quickSort(left).concat([num], quickSort(right));
+}
+
+// 6.堆排序
+function buildMaxHeap(arr) {  //建立大堆
+  let len = arr.length
+  for (let i = Math.floor(len/2); i >= 0; i--) {
+    heapify(arr, i)
+  }
+}
+
+function heapify(arr, i) {  //堆调整
+  let len = arr.length
+  let left = 2 * i + 1, right = 2 * i + 2
+  let largest = i
+  if (left < len && arr[left] > arr[largest]) {
+    largest = left
+  }
+  if (right < len && arr[right] > arr[largest]) {
+    largest = right
+  }
+  if (largest !== i) {
+    swap(arr, largest, i)
+    heapify(arr, largest) // swap后调整子堆
+  }
+}
+
+function swap(arr, i, j) {
+  let temp = arr[i]
+  arr[i] = arr[j]
+  arr[j] = temp
+}
+
+function heapSrot(arr) {
+  buildMaxHeap(arr)
+  for (let i = arr.length - 1; i > 0; i--) {
+    swap(arr, 0, i)
+    heapify(arr, 0)
+  }
+}
+
+// 7. 计数排序
+function countingSort(arr, maxValue) {  // 需要知道最大值，确认开辟的数组空间
+  let len = maxValue + 1
+  let bucket = new Array(len)
+  let sortedIndex = 0
+  
+  for (let i = 0; i < arr.length; i++) {
+    if (!bucket[arr[i]]) {
+      bucket[arr[i]] = 0
+    }
+    bucket[arr[i]]++
+  }
+
+  for (let i = 0; i < len; i++) {
+    while (bucket[i] > 0) {
+      arr[sortedIndex++] = i
+      bucket[i]--
+    }
+  }
+
+  return arr
+}
+
+// 8.桶排序（升级版计数排序）
+function bucketSort(arr, bucketSize) {
+  let maxValue = 0, minValue = 0  //  计算最大、最小值
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] < minValue) {
+      minValue = arr[i]
+    } else if (arr[i] > maxValue) {
+      maxValue = arr[i]
+    }
+  }
+
+  const DEFAULT_BUCKET_SIZE = 5
+  bucketSize = bucketSize || DEFAULT_BUCKET_SIZE  // 每个桶的大小
+  let bucketCount = Math.floor((maxValue - minValue) / bucketSize) + 1  // 桶的数量
+  let buckets = new Array(bucketCount)
+  buckets = buckets.map(item => [])
+
+  for (let i = 0; i < arr.length; i++) {
+    buckets[Math.floor((arr[i] - minValue) / bucketSize)].push(arr[i])  // 映射函数
+  }
+
+  for (let i = 0; i < buckets.length; i++) {
+    insertionSort(buckets[i])
+    for (let j = 0; j < buckets[i].length; j++) {
+      arr.push(buckets[i][j])
+    }
+  }
+  return arr
 }
