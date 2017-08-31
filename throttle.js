@@ -1,44 +1,63 @@
-/**
- * 
- * 
- * @param {Funtion} fun 
- * @param {number} delay 
- * @param {any} rest 
- */
-function throttle (fun, delay, ...rest) {
-  let last = null;
-  return () => {
-    const now = +new Date();
-    if (now - last > delay) {
-      fun(rest);
-      last = now;
+// underscore.js debounce
+//
+// Returns a function, that, when invoked, will only be triggered at most once
+// during a given window of time. Normally, the throttled function will run
+// as much as it can, without ever going more than once per `wait` duration;
+// but if you'd like to disable the execution on the leading edge, pass
+// `{leading: false}`. To disable execution on the trailing edge, ditto.
+
+_.throttle = function(func, wait, options) {
+  var context, args, result;
+  var timeout = null;
+  var previous = 0;
+  if (!options) options = {};
+  var later = function() {
+    previous = options.leading === false ? 0 : _.now();
+    timeout = null;
+    result = func.apply(context, args);
+    if (!timeout) context = args = null;
+  };
+  return function() {
+    var now = _.now();
+    if (!previous && options.leading === false) previous = now;
+    var remaining = wait - (now - previous);
+    context = this;
+    args = arguments;
+    if (remaining <= 0 || remaining > wait) {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+      }
+      previous = now;
+      result = func.apply(context, args);
+      if (!timeout) context = args = null;
+    } else if (!timeout && options.trailing !== false) {
+      timeout = setTimeout(later, remaining);
     }
+    return result;
+  };
+};
+
+my.throttle = () => {
+  let context, args, timeout = null, prev = 0
+
+  function later () {
+    prev = _.now()
+    timeout = null
+    fn.apply(context, args)
+    if (!timeout) context = args = null
+  }
+
+  return (func, wait) => {
+    let now = _.now()
+    let last = now - prev, remain = wait - last
+    context = this
+    args = arguments
+    if (ramin < 0 || remain > wait) {
+      func.apply(context, args)
+    } else if (!timeout) {
+      timeout = setTimeout(later, remain);
+    }
+    return result
   }
 }
-
-//实例
-const throttleExample = throttle(() => console.log(1), 1000);
-
-//调用
-throttleExample();
-throttleExample();
-throttleExample();
-
-//函数防抖
-const debouce = (fun, delay, ...rest) => {
-  let timer = null;
-  return () => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      fun(rest);
-    }, delay)
-  }
-}
-
-//实例
-const debouceExample = debouce(() => console.log(1), 1000);
-//调用
-debouceExample();
-debouceExample();
-debouceExample();
-

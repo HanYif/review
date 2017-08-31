@@ -93,12 +93,37 @@ var maxProfit2 = function(prices) {
   return maxResult
 };
 
-/** for test test
+var uniquePaths = function(m, n) {
+  let a = []
+  for (let i = 0; i < m; i++) {
+    a[i] = []
+    a[i][0] = 1
+  }
+  for (let j = 0; j < n; j++) {
+    a[0][j] = 1
+  }
+  for (let i = 1; i < m; i++) {
+    for (let j = 1; j < n; j++) {
+      a[i][j] = a[i - 1][j] + a[i][j - 1]
+    }
+  }
+  return a[m - 1][n - 1]
+};
+
+/** https://leetcode.com/problems/subsets
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+var subsets = function(nums) {
+  
+};
+
+/** for test
  * @param ...
  * @return ...
  */
 (function test () {
-  let result = maxProfit2([7, 1, 5, 3, 6, 4]);
+  let result = subsets([1, 2, 3]);
   console.log('result', result)
 })();
 
